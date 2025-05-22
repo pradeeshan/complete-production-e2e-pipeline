@@ -23,14 +23,14 @@ pipeline{
 
         stage("Build Application"){
             steps {
-                sh "mvn clean package"
+                bat "mvn clean package"
             }
 
         }
 
         stage("Test Application"){
             steps {
-                sh "mvn test"
+                bat "mvn test"
             }
 
         }
@@ -39,7 +39,7 @@ pipeline{
             steps {
                 script {
                     withSonarQubeEnv(credentialsId: 'sonar-token') {
-                        sh "mvn sonar:sonar"
+                        bat "mvn sonar:sonar"
                     }
                 }
             }
