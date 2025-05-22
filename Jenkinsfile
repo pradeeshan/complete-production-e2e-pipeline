@@ -78,7 +78,7 @@ pipeline{
                     
                     bat """
                         docker rm -f ${IMAGE_NAME} || true
-                        docker run -d --name ${IMAGE_NAME} -p 8080:8080 ${FULL_IMAGE_NAME}
+                        docker run -d --name ${IMAGE_NAME} -p 3000:3000 ${FULL_IMAGE_NAME}
                     """
                 }
             }
