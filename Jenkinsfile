@@ -5,6 +5,14 @@ pipeline{
         jdk 'jdk21'
         maven 'maven'
     }
+
+    environment {
+        DOCKER_USER = "pradeeshan"
+        IMAGE_NAME = 'myapp'
+        IMAGE_TAG = 'latest'
+        FULL_IMAGE_NAME = "${DOCKER_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
+        
+    }
     
     stages{
         stage("Cleanup Workspace"){
@@ -46,15 +54,34 @@ pipeline{
 
         }
 
-        stage("Quality Gate") {
+        stage("Build Docker Image") {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
-
+                    bat "docker build -t ${FULL_IMAGE_NAME} ."
                 }
             }
-
         }
+
+        stage("Push to Docker Hub") {
+            steps {
+                withDockerRegistry(credentialsId: 'docker') {
+                    bat "docker push ${FULL_IMAGE_NAME}"
+                }
+            }
+        }
+
+        stage("Deploy Container") {
+            steps {
+                script {
+                    
+                    bat """
+                        docker rm -f ${IMAGE_NAME} || true
+                        docker run -d --name ${IMAGE_NAME} -p 8080:8080 ${FULL_IMAGE_NAME}
+                    """
+                }
+            }
+        }
+
 
     }
 
