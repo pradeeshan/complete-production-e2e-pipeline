@@ -64,8 +64,10 @@ pipeline{
 
         stage("Push to Docker Hub") {
             steps {
-                withDockerRegistry(credentialsId: 'docker') {
-                    bat "docker push ${FULL_IMAGE_NAME}"
+                script {
+                    withDockerRegistry(credentialsId: 'docker') {
+                        bat "docker push ${FULL_IMAGE_NAME}"
+                    }
                 }
             }
         }
